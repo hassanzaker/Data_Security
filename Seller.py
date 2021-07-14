@@ -22,7 +22,7 @@ privateKey = rsa.pkcs1.key.PrivateKey(table['list'][0], table['list'][1], table[
                                       table['list'][4])
 
 
-def connect_to_bank():
+def step5_connect_to_bank():
     s = socket.socket()
     s.bind((hostname, 2222))
     s.listen(5)
@@ -45,4 +45,4 @@ def connect_to_bank():
     except:
         print('unauthenticated person')
 
-connect_to_bank()
+step5_connect_to_bank()

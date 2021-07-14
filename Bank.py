@@ -24,19 +24,19 @@ privateKey = rsa.pkcs1.key.PrivateKey(table['list'][0], table['list'][1], table[
                                       table['list'][4])
 
 
-def connect_to_seller():
+def step5_send_ack(port, receiver):
     timeStamp = time.time()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    message = ackForSeller + '---' + str(time.time())
+    message = ackForSeller + '---' + str(timeStamp)
     message = message.encode('latin')
     message += '---'.encode('latin') + rsa.sign(message, privateKey, 'SHA-1')
     session_key = rsa.randnum.read_random_bits(256)
 
     enc_data = aes256.encrypt(message.decode('latin'), session_key.decode('latin'))
-
-    encrypted_key = rsa.encrypt(session_key, CA.get_pub_key('seller'))
-    s.connect((hostname, Constants.PORT_BANK_SELLER))
+    encrypted_key = rsa.encrypt(session_key, CA.get_pub_key(receiver))
+    s.connect((hostname, port))
     s.sendall(enc_data + b'---' + encrypted_key)
     s.close()
 
-connect_to_seller()
+step5_send_ack(Constants.PORT_BANK_SELLER, 'seller')
+# step5_send_ack(Constants.PORT_BANK_USER, 'user')
