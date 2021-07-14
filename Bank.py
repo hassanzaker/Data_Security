@@ -6,7 +6,8 @@ import rsa.randnum
 from AesEverywhere import aes256
 
 
-import  CA
+import CA
+import Constants
 import rsa
 
 hostname = 'localhost'
@@ -34,7 +35,7 @@ def connect_to_seller():
     enc_data = aes256.encrypt(message.decode('latin'), session_key.decode('latin'))
 
     encrypted_key = rsa.encrypt(session_key, CA.get_pub_key('seller'))
-    s.connect((hostname, 2222))
+    s.connect((hostname, Constants.PORT_BANK_SELLER))
     s.sendall(enc_data + b'---' + encrypted_key)
     s.close()
 
