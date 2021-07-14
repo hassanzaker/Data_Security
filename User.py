@@ -73,4 +73,29 @@ def step1_connect_to_blockchain(range, count, start_time, finish_time, receiver)
     s.close()
 
 
-step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
+def step2or5_connect_to_seller(step):
+    s = socket.socket()
+    s.bind(('localhost', Constants.PORT_SELLER_USER))
+    s.listen(5)
+    c, addr = s.accept()
+    print('Got connection from', addr)
+    data = c.recv(1024)
+    encrypted_record, encrypted_key = data.decode('latin').split('&&&')
+    session_key = rsa.decrypt(encrypted_key.encode('latin'), privateKey)
+    plain = aes256.decrypt(encrypted_record, session_key.decode('latin')).decode()
+    try:
+        if step == "two":
+            accountID, amount, signature = plain.split('&&&')
+            rsa.verify(accountID.encode('latin') + b'&&&' + amount.encode('latin'), signature.encode('latin'),
+                       CA.get_pub_key(Constants.TITLE_SELLER))
+            print("Success")
+        elif step == "five":
+            ack, signature = plain.split('&&&')
+            rsa.verify(ack.encode('latin'), signature.encode('latin'), CA.get_pub_key(Constants.TITLE_SELLER))
+            print("Success")
+    except:
+        print("Alert")
+
+
+# step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
+step2or5_connect_to_seller('two')
