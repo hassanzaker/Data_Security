@@ -54,7 +54,7 @@ def step1_connect_to_user():
             'receiver': receiver
         }
         add_block(block)
-        ack = 'delegation has been added to blockchain'
+        ack = 'delegation has been added to block chain'
         timeStamp = str(time.time())
         signed = rsa.sign(ack.encode('latin') + b'&&&' + timeStamp.encode('latin'), privateKey, 'SHA-1')
 

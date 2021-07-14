@@ -15,7 +15,7 @@ ackForSeller = 'hiiii'
 # (publicKey, privateKey) = rsa.newkeys(512)
 # with open('private_bank.json', 'w') as fp:
 #     json.dump({'list': [privateKey.n, privateKey.e, privateKey.d, privateKey.p, privateKey.q]}, fp)
-# CA.add_keys('bank', publicKey)
+# CA.add_keys(Constants.TITLE_BANK, publicKey)
 
 with open('private_bank.json', 'r') as fp:
     table = json.load(fp)

@@ -13,7 +13,7 @@ hostname = 'localhost'
 # (publicKey, privateKey) = rsa.newkeys(512)
 # with open('private_seller.json', 'w') as fp:
 #      json.dump({'list': [privateKey.n, privateKey.e, privateKey.d, privateKey.p, privateKey.q]}, fp)
-# CA.add_keys('seller', publicKey)
+# CA.add_keys(Constants.TITLE_SELLER, publicKey)
 
 with open('private_seller.json', 'r') as fp:
     table = json.load(fp)
@@ -32,6 +32,7 @@ def step2_connect_to_user(accountID, amount):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((hostname, Constants.PORT_SELLER_USER))
     s.sendall(enc_data + b'&&&' + encrypted_key)
+    s.close()
 
 
 def step5_connect_to_user():
@@ -45,11 +46,12 @@ def step5_connect_to_user():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((hostname, Constants.PORT_SELLER_USER))
     s.sendall(enc_data + b'&&&' + encrypted_key)
+    s.close()
 
 
 def step5_connect_to_bank():
     s = socket.socket()
-    s.bind((hostname, 2222))
+    s.bind((hostname, Constants.PORT_BANK_SELLER))
     s.listen(5)
 
     c, addr = s.accept()
@@ -65,7 +67,7 @@ def step5_connect_to_bank():
 
 
     try:
-        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key('bank'))
+        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key(Constants.TITLE_BANK))
         print(ack)
     except:
         print('unauthenticated person')

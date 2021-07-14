@@ -41,7 +41,7 @@ def step5_connect_to_bank():
     message = ack + '---' + timestamp
 
     try:
-        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key('bank'))
+        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key(Constants.TITLE_BANK))
         print(ack)
     except:
         print('unauthenticated person')
@@ -95,6 +95,8 @@ def step2or5_connect_to_seller(step):
             print("Success")
     except:
         print("Alert")
+    c.close()
+    s.close()
 
 
 # step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
