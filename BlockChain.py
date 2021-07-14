@@ -64,7 +64,6 @@ def step1_connect_to_user():
         c.sendall(enc_data)
         c.close()
 
-
 def validation_of_delegation(PKd, policy, signature):
     try:
         rsa.verify(PKd.encode('latin') + b'&&&' + policy.encode('latin'), signature, CA.get_pub_key(Constants.TITLE_USER))

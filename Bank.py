@@ -1,4 +1,5 @@
 import json
+import random
 import socket
 import ssl
 import time
@@ -38,5 +39,40 @@ def step5_send_ack(port, receiver):
     s.sendall(enc_data + b'---' + encrypted_key)
     s.close()
 
-step5_send_ack(Constants.PORT_BANK_SELLER, 'seller')
+def step3_connect_to_user():
+    s = socket.socket()
+    s.bind((hostname, Constants.PORT_BANK_USER))
+    s.listen(5)
+
+    c, addr = s.accept()
+    print('Connected by', addr)
+    data = c.recv(1024)
+
+    enc_data, enc_key = data.decode('latin').split('---')
+
+    session_key = rsa.decrypt(enc_key.encode('latin'), privateKey)
+
+    plain = aes256.decrypt(enc_data, session_key.decode('latin')).decode()
+    user_account_id, seller_account_id, amount, signed = plain.split('&&&')
+    message = user_account_id + '&&&' + seller_account_id + '&&&' + amount
+    try:
+        rsa.verify(message.encode('latin'), signed.encode('latin'), CA.get_pub_key('user'))
+    except:
+        print('unauthenticated')
+        return
+    nance = random.randint(1, 10000000)
+    message = str(nance) + '&&&' + message
+
+    enc_data = aes256.encrypt(message, session_key.decode('latin'))
+    c.sendall(enc_data)
+    enc_data = c.recv(1024)
+    new_nance = int(aes256.decrypt(enc_data.decode('latin'), session_key.decode('latin')))
+    if new_nance == nance + 1:
+        print('OK')
+        ## do what is needed
+    c.close()
+    s.close()
+
+# step5_send_ack(Constants.PORT_BANK_SELLER, 'seller')
 # step5_send_ack(Constants.PORT_BANK_USER, 'user')
+step3_connect_to_user()

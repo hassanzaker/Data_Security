@@ -41,7 +41,7 @@ def step5_connect_to_bank():
     message = ack + '---' + timestamp
 
     try:
-        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key(Constants.TITLE_BANK))
+        isVerified = rsa.verify(message.encode('latin'), signature.encode('latin'), CA.get_pub_key('bank'))
         print(ack)
     except:
         print('unauthenticated person')
@@ -66,7 +66,7 @@ def step1_connect_to_blockchain(range, count, start_time, finish_time, receiver)
     plain = aes256.decrypt(data, session_key.decode('latin')).decode()
     ack, timeStamp, signed = plain.split('&&&')
     try:
-        rsa.verify(ack.encode('latin') + b'&&' + timeStamp.encode('latin'), signed.encode('latin'), CA.get_pub_key(Constants.TITLE_BLOCKCHAIN))
+        rsa.verify(ack.encode('latin') + b'&&&' + timeStamp.encode('latin'), signed.encode('latin'), CA.get_pub_key(Constants.TITLE_BLOCKCHAIN))
         print('OK')
     except:
         print('unauthenticated')
@@ -101,3 +101,32 @@ def step2or5_connect_to_seller(step):
 
 # step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
 step2or5_connect_to_seller('two')
+
+def step3_connect_to_bank(user_account_id, seller_account_id, amount):
+    session_key = rsa.randnum.read_random_bits(256)
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    temp = user_account_id + "&&&" + seller_account_id + "&&&" + str(amount)
+    signed = rsa.sign(temp.encode('latin'), privateKey, 'SHA-1')
+    message = temp.encode('latin') + b'&&&' + signed
+    # print(temp)
+    enc_data = aes256.encrypt(message.decode('latin'), session_key.decode('latin'))
+
+    encrypted_key = rsa.encrypt(session_key, CA.get_pub_key(Constants.TITLE_BANK))
+
+    s.connect((hostname, Constants.PORT_BANK_USER))
+    s.sendall(enc_data + b'---' + encrypted_key)
+    enc_data = s.recv(1024)
+    data = aes256.decrypt(enc_data.decode('latin'), session_key.decode('latin')).decode('latin')
+    a, b, c, d = data.split('&&&')
+    if b == user_account_id and c == seller_account_id and d == str(amount):
+        nance = int(a) + 1
+        enc_data = aes256.encrypt(str(nance), session_key.decode('latin'))
+        s.sendall(enc_data)
+        print('ok')
+
+    s.close()
+
+step3_connect_to_bank('87654321', '12345678', 100000)
+# step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
