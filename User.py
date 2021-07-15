@@ -100,7 +100,7 @@ def step2or5_connect_to_seller(step):
 
 
 # step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
-step2or5_connect_to_seller('two')
+# step2or5_connect_to_seller('two')
 
 def step3_connect_to_bank(user_account_id, seller_account_id, amount):
     session_key = rsa.randnum.read_random_bits(256)
@@ -126,7 +126,8 @@ def step3_connect_to_bank(user_account_id, seller_account_id, amount):
         s.sendall(enc_data)
         print('ok')
 
+
     s.close()
 
-step3_connect_to_bank('87654321', '12345678', 100000)
-# step1_connect_to_blockchain('(1, 10)', '10', '2021/6/15', '2021/7/7', '12345678')
+# step3_connect_to_bank('87654321', '12345678', 100000)
+step1_connect_to_blockchain('1 , 1000', '100', '1000-6-15', '3000-7-9', '12345678')
